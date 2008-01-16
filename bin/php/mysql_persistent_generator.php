@@ -6,6 +6,15 @@ include_once( 'lib/ezutils/classes/ezcli.php' );
 include_once( 'lib/ezdb/classes/ezdb.php' );
 include_once( 'lib/ezutils/classes/ezphpcreator.php' );
 
+if ( !function_exists( 'readline' ) )
+{
+    function readline( $prompt = '' )
+    {
+        echo $prompt . ' ';
+        return trim( fgets( STDIN ) );
+    }
+}
+
 $cli =& eZCLI::instance();
 
 $scriptSettings = array();
@@ -105,9 +114,11 @@ else
 
     $functionAttributes = array();
     $guidFunctions = array();
+    $columnNames = array();
 
     foreach ( $result as $column )
     {
+        $columnNames[] = $column['COLUMN_NAME'];
         $columnDef = array();
         $columnDef['name'] = $column['COLUMN_NAME'];
         $datatype = 'string';
@@ -146,10 +157,50 @@ else
         $defArray['fields'][$column['COLUMN_NAME']] = $columnDef;
     }
 
+    $incrementKey = false;
+    while ( true )
+    {
+        $userInput = readline( 'Specify the column to use as increment_key (leave empty to continue): ' );
+        if ( $userInput == '' )
+        {
+            break;
+        }
 
-    $defArray['keys'] = array();
+        if ( !in_array( $userInput, $columnNames ) )
+        {
+            $cli->error( 'Uknown column name: ' . $userInput . '. Choose one of: ' . implode( ', ', $columnNames ) );
+        }
+        else
+        {
+            $incrementKey = $userInput;
+            break;
+        }
+    }
+
+    $keys = array();
+    while ( true )
+    {
+        $userInput = readline( 'Which columns to use as key? Specify one at a time (leave empty to continue): ' );
+        if ( $userInput == '' )
+        {
+            break;
+        }
+
+        if ( !in_array( $userInput, $columnNames ) )
+        {
+            $cli->error( 'Uknown column name: ' . $userInput . '. Choose one of: ' . implode( ', ', $columnNames ) );
+        }
+        else
+        {
+            $keys[] = $userInput;
+        }
+    }
+
+    $keys = array_unique( $keys );
+
+    $defArray['keys'] = $keys;
     $defArray['function_attributes'] = $functionAttributes;
-    $defArray['increment_key'] = false;
+    $defArray['increment_key'] = $incrementKey;
     $defArray['class_name'] = $className;
     $defArray['sort'] = array();
     $defArray['name'] = $tableName;
