@@ -1,10 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-include_once( 'kernel/classes/ezscript.php' );
-include_once( 'lib/ezutils/classes/ezcli.php' );
-include_once( 'lib/ezdb/classes/ezdb.php' );
-include_once( 'lib/ezutils/classes/ezphpcreator.php' );
+require 'autoload.php';
 
 if ( !function_exists( 'readline' ) )
 {
@@ -15,7 +12,7 @@ if ( !function_exists( 'readline' ) )
     }
 }
 
-$cli =& eZCLI::instance();
+$cli = eZCLI::instance();
 
 $scriptSettings = array();
 $scriptSettings['description'] = 'Persisent class generation for MySQL 5.x';
@@ -23,7 +20,7 @@ $scriptSettings['use-session'] = true;
 $scriptSettings['use-modules'] = true;
 $scriptSettings['use-extensions'] = true;
 
-$script =& eZScript::instance( $scriptSettings );
+$script = eZScript::instance( $scriptSettings );
 $script->startup();
 
 $config = '[list:?]';
@@ -38,7 +35,7 @@ $script->initialize();
 
 $tableName = false;
 
-$db =& eZDB::instance();
+$db = eZDB::instance();
 
 if ( $options['list'] )
 {
@@ -211,9 +208,6 @@ else
     $php->addComment( 'Persistent object class auto-generated' );
     $php->addSpace();
 
-    $php->addInclude( 'kernel/classes/ezpersistentobject.php' );
-    $php->addSpace();
-
     // Class start
     $php->addCodePiece( "class $className extends eZPersistentObject\n" );
     $php->addCodePiece( "{\n" );
@@ -221,14 +215,14 @@ else
     // Constructor
     $php->addCodePiece( "function $className( \$row )\n", array( 'spacing' => 4 ) );
     $php->addCodePiece( "{\n", array( 'spacing' => 4 ) );
-    $php->addMethodCall( 'this', 'eZPersistentObject', array( array( 'row', EZ_PHPCREATOR_METHOD_CALL_PARAMETER_VARIABLE ) ), false, array( 'spacing' => 8 ) );
+    $php->addMethodCall( 'this', 'eZPersistentObject', array( array( 'row', eZPHPCreator::METHOD_CALL_PARAMETER_VARIABLE ) ), false, array( 'spacing' => 8 ) );
     $php->addCodePiece( "}\n", array( 'spacing' => 4 ) );
     $php->addSpace();
 
     // Persistent object definition
-    $php->addCodePiece( "function definition()\n", array( 'spacing' => 4 ) );
+    $php->addCodePiece( "static function definition()\n", array( 'spacing' => 4 ) );
     $php->addCodePiece( "{\n", array( 'spacing' => 4 ) );
-    $php->addVariable( 'def', $defArray, EZ_PHPCREATOR_VARIABLE_ASSIGNMENT, array( 'spacing' => 8 ) );
+    $php->addVariable( 'def', $defArray, eZPHPCreator::VARIABLE_ASSIGNMENT, array( 'spacing' => 8 ) );
     $php->addCodePiece( "return \$def;\n", array( 'spacing' => 8 ) );
     $php->addCodePiece( "}\n", array( 'spacing' => 4 ) );
     $php->addSpace();
