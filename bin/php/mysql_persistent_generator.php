@@ -40,7 +40,8 @@ if ( $options['list'] )
         {
             $tables = $db->arrayQuery( "select table_name
             from information_schema.tables
-            where table_type='BASE TABLE'" );
+            where table_schema='" . $db->escapeString( $db->DB ) . "'
+            and table_type='BASE TABLE'" );
 
             foreach ( $tables as $table )
             {
@@ -59,7 +60,8 @@ if ( $options['list'] )
 
             $columns = $db->arrayQuery( "select COLUMN_NAME, DATA_TYPE
                 from information_schema.columns
-                WHERE table_name='$tableName'
+                where table_schema='" . $db->escapeString( $db->DB ) . "'
+                and table_name='" . $db->escapeString( $tableName ) . "'
                 order by table_name,ordinal_position" );
 
             foreach ( $columns as $column )
@@ -94,7 +96,8 @@ else
 
     $result = $db->arrayQuery( "select COLUMN_NAME, DATA_TYPE, IS_NULLABLE
     from information_schema.columns
-    WHERE table_name='$tableName'
+    where table_schema='" . $db->escapeString( $db->DB ) . "'
+    and table_name='" . $db->escapeString( $tableName ) . "'
     order by table_name,ordinal_position" );
 
     $defArray = array();
