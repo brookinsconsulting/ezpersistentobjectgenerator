@@ -128,6 +128,7 @@ else
             } break;
 
             case 'int':
+            case 'smallint':
             case 'tinyint':
             {
                 $datatype = 'integer';
