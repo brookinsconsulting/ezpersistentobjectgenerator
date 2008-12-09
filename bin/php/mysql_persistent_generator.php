@@ -215,7 +215,7 @@ else
     $php->addCodePiece( "{\n" );
 
     // Constructor
-    $php->addCodePiece( "function $className( \$row )\n", array( 'spacing' => 4 ) );
+    $php->addCodePiece( "function __construct( \$row )\n", array( 'spacing' => 4 ) );
     $php->addCodePiece( "{\n", array( 'spacing' => 4 ) );
     $php->addMethodCall( 'this', 'eZPersistentObject', array( array( 'row', eZPHPCreator::METHOD_CALL_PARAMETER_VARIABLE ) ), false, array( 'spacing' => 8 ) );
     $php->addCodePiece( "}\n", array( 'spacing' => 4 ) );
